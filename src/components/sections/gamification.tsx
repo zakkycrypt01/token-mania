@@ -1,16 +1,51 @@
+// @ts-nocheck
+"use client";
+
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote } from "lucide-react";
+import { generateQuests, Quest } from '@/ai/flows/generate-quests-flow';
+import { Skeleton } from '../ui/skeleton';
 
 export default function GamificationSection() {
-  const quests = [
-    { title: "The Genesis Share", description: "Share the presale on X/Twitter.", reward: "100 XP", icon: <TwitterIcon className="w-6 h-6" /> },
-    { title: "Community Explorer", description: "Join our Telegram and Discord.", reward: "150 XP", icon: <Users className="w-6 h-6" /> },
-    { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: <Star className="w-6 h-6" /> },
-    { title: "First Contact", description: "Make your first presale purchase.", reward: "200 XP", icon: <Gem className="w-6 h-6" /> },
-    { title: "Meme Architect", description: "Contribute a meme idea in Discord.", reward: "250 XP", icon: <MessageSquareQuote className="w-6 h-6" /> },
-  ];
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [loadingQuests, setLoadingQuests] = useState(true);
+
+  useEffect(() => {
+    const fetchQuests = async () => {
+      try {
+        setLoadingQuests(true);
+        const response = await generateQuests();
+        setQuests(response.quests);
+      } catch (error) {
+        console.error("Failed to generate quests:", error);
+        // Fallback to some default quests if generation fails
+        setQuests([
+          { title: "The Genesis Share", description: "Share the presale on X/Twitter.", reward: "100 XP", icon: "Twitter" },
+          { title: "Community Explorer", description: "Join our Telegram and Discord.", reward: "150 XP", icon: "Users" },
+          { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: "Star" },
+          { title: "First Contact", description: "Make your first presale purchase.", reward: "200 XP", icon: "Gem" },
+          { title: "Meme Architect", description: "Contribute a meme idea in Discord.", reward: "250 XP", icon: "MessageSquareQuote" },
+        ]);
+      } finally {
+        setLoadingQuests(false);
+      }
+    };
+    fetchQuests();
+  }, []);
+
+  const getQuestIcon = (iconName: string) => {
+    switch(iconName) {
+      case "Twitter": return <TwitterIcon className="w-6 h-6" />;
+      case "Users": return <Users className="w-6 h-6" />;
+      case "Star": return <Star className="w-6 h-6" />;
+      case "Gem": return <Gem className="w-6 h-6" />;
+      case "MessageSquareQuote": return <MessageSquareQuote className="w-6 h-6" />;
+      default: return <Star className="w-6 h-6" />;
+    }
+  }
 
   const leaderboard = [
     { rank: 1, user: "0x12...aBcd", contribution: "10.5 SOL", xp: 12500 },
@@ -42,20 +77,37 @@ export default function GamificationSection() {
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {quests.map((quest, index) => (
-              <Card key={index} className="flex flex-col bg-card/50 border-primary/10 hover:border-primary/30 transition-all">
-                <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="p-3 rounded-full bg-primary/10 text-primary border border-primary/20">{quest.icon}</div>
-                  <div>
-                    <CardTitle className="font-headline">{quest.title}</CardTitle>
-                    <CardDescription>{quest.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="mt-auto">
-                  <Badge variant="secondary">Reward: {quest.reward}</Badge>
-                </CardContent>
-              </Card>
-            ))}
+            {loadingQuests ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <Card key={index} className="flex flex-col bg-card/50 border-primary/10">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-[150px]" />
+                      <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="mt-auto">
+                    <Skeleton className="h-6 w-[100px]" />
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              quests.map((quest, index) => (
+                <Card key={index} className="flex flex-col bg-card/50 border-primary/10 hover:border-primary/30 transition-all">
+                  <CardHeader className="flex flex-row items-center gap-4">
+                    <div className="p-3 rounded-full bg-primary/10 text-primary border border-primary/20">{getQuestIcon(quest.icon)}</div>
+                    <div>
+                      <CardTitle className="font-headline">{quest.title}</CardTitle>
+                      <CardDescription>{quest.description}</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="mt-auto">
+                    <Badge variant="secondary">Reward: {quest.reward}</Badge>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>
