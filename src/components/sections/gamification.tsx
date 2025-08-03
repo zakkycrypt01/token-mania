@@ -30,11 +30,11 @@ export default function GamificationSection() {
   ];
 
   return (
-    <div className="bg-card">
+    <div className="bg-background">
       <section id="quests" className="py-12 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary tracking-tighter">
+            <h2 className="text-3xl md:text-5xl font-bold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-primary to-purple-400">
               Quest Log
             </h2>
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
@@ -43,9 +43,9 @@ export default function GamificationSection() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quests.map((quest, index) => (
-              <Card key={index} className="flex flex-col">
+              <Card key={index} className="flex flex-col bg-card/50 border-primary/10 hover:border-primary/30 transition-all">
                 <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="p-3 rounded-full bg-primary/10 text-primary">{quest.icon}</div>
+                  <div className="p-3 rounded-full bg-primary/10 text-primary border border-primary/20">{quest.icon}</div>
                   <div>
                     <CardTitle className="font-headline">{quest.title}</CardTitle>
                     <CardDescription>{quest.description}</CardDescription>
@@ -63,14 +63,14 @@ export default function GamificationSection() {
       <section id="leaderboard" className="py-12 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary tracking-tighter">
+            <h2 className="text-3xl md:text-5xl font-bold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-primary to-purple-400">
               Hall of Memes
             </h2>
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
               See who's leading the charge. Will you make it to the top?
             </p>
           </div>
-          <Card>
+          <Card className="bg-card/50 border-primary/10">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -82,7 +82,7 @@ export default function GamificationSection() {
               </TableHeader>
               <TableBody>
                 {leaderboard.map((entry) => (
-                  <TableRow key={entry.rank}>
+                  <TableRow key={entry.rank} className="hover:bg-primary/5">
                     <TableCell className="font-medium text-primary text-lg">{entry.rank}</TableCell>
                     <TableCell className="font-mono">{entry.user}</TableCell>
                     <TableCell>{entry.contribution}</TableCell>
@@ -98,7 +98,7 @@ export default function GamificationSection() {
       <section id="achievements" className="py-12 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary tracking-tighter">
+            <h2 className="text-3xl md:text-5xl font-bold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-primary to-purple-400">
               Trophy Room
             </h2>
             <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
@@ -107,7 +107,7 @@ export default function GamificationSection() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {achievements.map((achievement, index) => (
-              <Card key={index} className="flex flex-col items-center justify-center p-6 text-center">
+              <Card key={index} className="flex flex-col items-center justify-center p-6 text-center bg-card/50 border-primary/10 hover:border-primary/30 transition-all">
                 <div className="mb-4">{achievement.icon}</div>
                 <p className="font-semibold font-headline">{achievement.title}</p>
                 <Badge variant={achievement.tier === 'Gold' ? 'default' : achievement.tier === 'Silver' ? 'secondary' : 'outline'} className={`mt-2 ${achievement.tier === 'Gold' ? 'bg-amber-400 text-black' : achievement.tier === 'Silver' ? 'bg-slate-400 text-black' : ''}`}>

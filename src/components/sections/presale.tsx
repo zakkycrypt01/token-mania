@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Wallet } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useToast } from '@/hooks/use-toast';
@@ -32,7 +31,7 @@ export default function PresaleSection() {
 
   const handleTokenAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === '' || /^[0-9\b]+$/.test(value)) {
+    if (value === '' || /^[0-9\\b]+$/.test(value)) {
       setTokenAmount(value);
     }
   };
@@ -92,17 +91,17 @@ export default function PresaleSection() {
   const isPurchaseDisabled = solAmount < MIN_PURCHASE_SOL || solAmount > MAX_PURCHASE_SOL || isBuying;
 
   return (
-    <section id="presale" className="py-12 md:py-24 bg-card">
+    <section id="presale" className="py-12 md:py-24 bg-background">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <div className="space-y-4">
-            <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary tracking-tighter">
+          <div className="space-y-6">
+            <h2 className="text-3xl md:text-5xl font-bold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-primary to-purple-400">
               Get Your Tokens Now!
             </h2>
             <p className="text-lg text-muted-foreground">
               The presale is live! Connect your wallet to participate. Don't miss out on the opportunity to be an early supporter and get rewarded.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-2 pt-4">
               <div className="flex justify-between items-center text-sm text-muted-foreground">
                 <span>Presale Progress</span>
                 <span>{PRESALE_PROGRESS}% Complete</span>
@@ -113,14 +112,14 @@ export default function PresaleSection() {
                 <span>10,000 SOL</span>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground pt-4">
               1 Token = {TOKEN_PRICE_IN_SOL} SOL
             </p>
           </div>
           
-          <Card className="shadow-lg">
+          <Card className="shadow-2xl bg-card/50 border border-primary/20 backdrop-blur-sm glow-shadow">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Join The Presale</CardTitle>
+              <CardTitle className="font-headline text-3xl">Join The Presale</CardTitle>
               <CardDescription>Secure your tokens before they're gone. Connect your wallet to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -136,6 +135,7 @@ export default function PresaleSection() {
                       placeholder="e.g., 1.5"
                       value={solAmount > 0 ? solAmount.toFixed(5) : ''}
                       onChange={handleSolAmountChange}
+                      className="bg-background/80"
                     />
                      <p className="text-xs text-muted-foreground">Min: {MIN_PURCHASE_SOL} SOL, Max: {MAX_PURCHASE_SOL} SOL</p>
                   </div>
@@ -147,6 +147,7 @@ export default function PresaleSection() {
                       placeholder="e.g., 10000"
                       value={tokenAmount}
                       onChange={handleTokenAmountChange}
+                      className="bg-background/80"
                     />
                   </div>
                 </>

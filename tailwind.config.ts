@@ -18,7 +18,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['"Space Grotesk"', 'sans-serif'],
-        headline: ['"Space Grotesk"', 'sans-serif'],
+        headline: ['"Syne"', '"Space Grotesk"', 'sans-serif'],
         sans: ['"Space Grotesk"', 'sans-serif'],
         code: ['monospace'],
       },
