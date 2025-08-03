@@ -6,12 +6,16 @@ import { Button } from "./ui/button";
 import { Wallet } from "lucide-react";
 
 const WalletButton = () => {
-    const { wallet } = useWallet();
+    const { wallet, publicKey } = useWallet();
+
+    const formattedAddress = publicKey
+        ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
+        : "Connect Wallet";
 
     return (
         <WalletMultiButton style={{}}>
             <Wallet className="mr-2 h-4 w-4" />
-            {!wallet ? "Connect Wallet" : "My Wallet"}
+            {wallet ? formattedAddress : "Connect Wallet"}
         </WalletMultiButton>
     );
 };
