@@ -5,7 +5,7 @@ import { ConnectionProvider, WalletProvider as SolanaWalletProvider } from '@sol
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
     PhantomWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+} from '@solana/wallet-adapter-phantom';
 import {
     WalletModalProvider,
 } from '@solana/wallet-adapter-react-ui';
