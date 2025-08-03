@@ -17,9 +17,10 @@ import {
 const chartData = [
   { category: "Presale", value: 40, fill: "hsl(var(--primary))" },
   { category: "Liquidity", value: 30, fill: "hsl(var(--accent))" },
-  { category: "Team & Advisors", value: 10, fill: "hsl(var(--secondary-foreground))" },
-  { category: "Marketing", value: 10, fill: "hsl(var(--muted-foreground))" },
-  { category: "Community Rewards", value: 10, fill: "hsl(var(--foreground))" },
+  { category: "Team & Partnerships", value: 5.5, fill: "hsl(var(--chart-3))" },
+  { category: "Marketing", value: 7, fill: "hsl(var(--chart-4))" },
+  { category: "Community Rewards", value: 10, fill: "hsl(var(--chart-5))" },
+  { category: "Product Development", value: 7.5, fill: "hsl(var(--secondary-foreground))" },
 ]
 
 const chartConfig = {
@@ -35,7 +36,7 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
   team: {
-    label: "Team & Advisors",
+    label: "Team & Partnerships",
     color: "hsl(var(--chart-3))",
   },
   marketing: {
@@ -45,6 +46,10 @@ const chartConfig = {
   rewards: {
     label: "Community Rewards",
     color: "hsl(var(--chart-5))",
+  },
+  development: {
+    label: "Product Development",
+    color: "hsl(var(--chart-2))",
   },
 }
 
