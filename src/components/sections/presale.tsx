@@ -1,19 +1,28 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Wallet } from "lucide-react";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { useToast } from '@/hooks/use-toast';
+import WalletButton from '../wallet-button';
 
 const TOKEN_PRICE_IN_SOL = 0.00005;
 const MIN_PURCHASE_SOL = 0.1;
 const MAX_PURCHASE_SOL = 10;
 const PRESALE_PROGRESS = 75;
+const PRESALE_WALLET_ADDRESS = 'YOUR_PRESALE_WALLET_ADDRESS_HERE'; // IMPORTANT: Replace with your actual presale wallet address
 
 export default function PresaleSection() {
   const [tokenAmount, setTokenAmount] = useState<string>("10000");
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
+  const { toast } = useToast();
+  const [isBuying, setIsBuying] = useState(false);
 
   const solAmount = useMemo(() => {
     const numTokens = parseFloat(tokenAmount);
@@ -23,7 +32,6 @@ export default function PresaleSection() {
 
   const handleTokenAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow empty input or numbers
     if (value === '' || /^[0-9\b]+$/.test(value)) {
       setTokenAmount(value);
     }
@@ -41,8 +49,47 @@ export default function PresaleSection() {
         setTokenAmount(String(Math.floor(tokens)));
     }
   };
+
+  const handleBuy = useCallback(async () => {
+    if (!publicKey) {
+        toast({ title: "Error", description: "Please connect your wallet first.", variant: "destructive" });
+        return;
+    }
+    if (PRESALE_WALLET_ADDRESS === 'YOUR_PRESALE_WALLET_ADDRESS_HERE') {
+      toast({ title: "Error", description: "Presale wallet address is not configured.", variant: "destructive" });
+      return;
+    }
+
+    setIsBuying(true);
+    try {
+        const transaction = new Transaction().add(
+            SystemProgram.transfer({
+                fromPubkey: publicKey,
+                toPubkey: new PublicKey(PRESALE_WALLET_ADDRESS),
+                lamports: solAmount * LAMPORTS_PER_SOL,
+            })
+        );
+
+        const {
+            context: { slot: minContextSlot },
+            value: { blockhash, lastValidBlockHeight }
+        } = await connection.getLatestBlockhashAndContext();
+
+        const signature = await sendTransaction(transaction, connection, { minContextSlot });
+
+        await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature });
+        
+        toast({ title: "Purchase Successful!", description: `You successfully purchased ${tokenAmount} tokens.` });
+
+    } catch (error: any) {
+        console.error("Transaction failed", error);
+        toast({ title: "Transaction Failed", description: error.message, variant: "destructive" });
+    } finally {
+        setIsBuying(false);
+    }
+}, [publicKey, connection, sendTransaction, solAmount, tokenAmount, toast]);
   
-  const isPurchaseDisabled = solAmount < MIN_PURCHASE_SOL || solAmount > MAX_PURCHASE_SOL;
+  const isPurchaseDisabled = solAmount < MIN_PURCHASE_SOL || solAmount > MAX_PURCHASE_SOL || isBuying;
 
   return (
     <section id="presale" className="py-12 md:py-24 bg-card">
@@ -53,7 +100,7 @@ export default function PresaleSection() {
               Get Your Tokens Now!
             </h2>
             <p className="text-lg text-muted-foreground">
-              The presale is live! Connect your Phantom wallet to participate. Don't miss out on the opportunity to be an early supporter and get rewarded.
+              The presale is live! Connect your wallet to participate. Don't miss out on the opportunity to be an early supporter and get rewarded.
             </p>
             <div className="space-y-2">
               <div className="flex justify-between items-center text-sm text-muted-foreground">
@@ -77,37 +124,41 @@ export default function PresaleSection() {
               <CardDescription>Secure your tokens before they're gone. Connect your wallet to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Button className="w-full" size="lg">
-                <Wallet className="mr-2 h-5 w-5" />
-                Connect Phantom Wallet
-              </Button>
-              <div className="space-y-2">
-                <label htmlFor="token-amount" className="text-sm font-medium">You pay (SOL)</label>
-                <Input
-                  id="sol-amount"
-                  type="number"
-                  placeholder="e.g., 1.5"
-                  value={solAmount > 0 ? solAmount.toFixed(5) : ''}
-                  onChange={handleSolAmountChange}
-                />
-                 <p className="text-xs text-muted-foreground">Min: {MIN_PURCHASE_SOL} SOL, Max: {MAX_PURCHASE_SOL} SOL</p>
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="token-amount" className="text-sm font-medium">You receive (Tokens)</label>
-                <Input
-                  id="token-amount"
-                  type="text"
-                  placeholder="e.g., 10000"
-                  value={tokenAmount}
-                  onChange={handleTokenAmountChange}
-                />
-              </div>
+              {!publicKey ? (
+                 <WalletButton />
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <label htmlFor="token-amount" className="text-sm font-medium">You pay (SOL)</label>
+                    <Input
+                      id="sol-amount"
+                      type="number"
+                      placeholder="e.g., 1.5"
+                      value={solAmount > 0 ? solAmount.toFixed(5) : ''}
+                      onChange={handleSolAmountChange}
+                    />
+                     <p className="text-xs text-muted-foreground">Min: {MIN_PURCHASE_SOL} SOL, Max: {MAX_PURCHASE_SOL} SOL</p>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="token-amount" className="text-sm font-medium">You receive (Tokens)</label>
+                    <Input
+                      id="token-amount"
+                      type="text"
+                      placeholder="e.g., 10000"
+                      value={tokenAmount}
+                      onChange={handleTokenAmountChange}
+                    />
+                  </div>
+                </>
+              )}
             </CardContent>
-            <CardFooter>
-              <Button size="lg" className="w-full" disabled={isPurchaseDisabled}>
-                Buy Now
-              </Button>
-            </CardFooter>
+             {publicKey && (
+                <CardFooter>
+                  <Button size="lg" className="w-full" disabled={isPurchaseDisabled} onClick={handleBuy}>
+                    {isBuying ? "Processing..." : "Buy Now"}
+                  </Button>
+                </CardFooter>
+             )}
           </Card>
         </div>
       </div>

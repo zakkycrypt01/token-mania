@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Wallet } from "lucide-react";
 import { DogPaw } from "@/components/icons";
+import WalletButton from "@/components/wallet-button";
 
 export default function Header() {
   const navLinks = [
@@ -28,10 +29,9 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <Button className="hidden sm:flex" variant="outline">
-            <Wallet className="mr-2 h-4 w-4" />
-            Connect Phantom
-          </Button>
+          <div className="hidden sm:flex">
+             <WalletButton />
+          </div>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -50,10 +50,9 @@ export default function Header() {
                      {link.label}
                    </Link>
                 ))}
-                 <Button className="w-full mt-4" variant="default">
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Connect Phantom
-                  </Button>
+                 <div className="w-full mt-4">
+                    <WalletButton />
+                  </div>
               </nav>
             </SheetContent>
           </Sheet>
