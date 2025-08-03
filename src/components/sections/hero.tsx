@@ -9,11 +9,11 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0">
         <Image
           src="https://placehold.co/1920x1080.png"
-          alt="Meme Dog in space"
+          alt="Neural network visualization"
           layout="fill"
           objectFit="cover"
           className="opacity-10"
-          data-ai-hint="corgi dog space"
+          data-ai-hint="neural network"
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
@@ -23,13 +23,13 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto">
           <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 border border-primary/20 shadow-sm">
             <Sparkles className="inline-block w-4 h-4 mr-2" />
-            The Ultimate Solana Meme Token is Here!
+            The Future of Decentralized Intelligence is Here!
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-white to-neutral-300">
-            Welcome to <span className="text-primary">Meme Token Mania</span>
+            Welcome to <span className="text-primary">Neural AI</span>
           </h1>
           <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Join the most gamified presale event in crypto history. Complete quests, climb the leaderboard, and secure your bag of the next legendary meme token.
+            Join the most innovative presale event in crypto history. Contribute to the AI revolution, climb the leaderboard, and secure your stake in the future of intelligence.
           </p>
           <div className="mt-10 flex justify-center gap-4">
             <Button size="lg" asChild className="glow-shadow">

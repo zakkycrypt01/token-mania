@@ -3,8 +3,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function FaqSection() {
   const faqs = [
     {
-      question: "What is Meme Token Mania?",
-      answer: "It's a revolutionary new token on the Solana blockchain that combines meme culture with a deeply integrated gamified experience. We're making crypto fun again!"
+      question: "What is Neural AI?",
+      answer: "It's a revolutionary new token on the Solana blockchain that combines decentralized AI with a gamified user experience. We're making AI accessible and rewarding for everyone."
     },
     {
       question: "How do I connect my Phantom Wallet?",
@@ -12,11 +12,11 @@ export default function FaqSection() {
     },
     {
       question: "What are Quests and Achievements?",
-      answer: "Quests are tasks you can complete to earn XP and rewards. Achievements are special badges you unlock for hitting milestones, like being a presale pioneer or a top contributor."
+      answer: "Quests are tasks you can complete to earn XP and rewards, like training a model or providing data. Achievements are special badges you unlock for hitting milestones and contributing to the network."
     },
     {
       question: "What is the token's utility?",
-      answer: "The token is central to our gamified ecosystem. It will be used for exclusive in-game actions, governance votes on new features, and accessing special community perks. The more you hold, the more powerful you become in the Memeverse."
+      answer: "The token is central to our AI ecosystem. It will be used for running AI models, governance votes on new features, and accessing special community perks. The more you hold, the more influence you have in the network."
     },
     {
       question: "Is the presale secure?",

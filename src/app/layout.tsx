@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 import WalletProvider from '@/components/providers/wallet-provider';
 
 export const metadata: Metadata = {
-  title: 'Meme Token Mania',
-  description: 'The most epic gamified meme token presale on Solana!',
+  title: 'Neural AI',
+  description: 'The most epic gamified AI token presale on Solana!',
 };
 
 export default function RootLayout({

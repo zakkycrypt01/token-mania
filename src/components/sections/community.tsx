@@ -8,10 +8,10 @@ export default function CommunitySection() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary tracking-tighter">
-            Join the Memeverse
+            Join the Neural Network
           </h2>
           <p className="mt-4 max-w-xl mx-auto text-lg text-muted-foreground">
-            Assemble the squad! Connect with us, share memes, and be part of the mission.
+            Connect with us, share ideas, and be part of the mission to build the future of AI.
           </p>
           <div className="mt-8 flex justify-center gap-4 md:gap-6">
             <Button size="lg" asChild className="bg-sky-500 hover:bg-sky-600 text-white">

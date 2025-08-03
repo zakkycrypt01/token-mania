@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import { DogPaw } from "@/components/icons";
+import { Logo } from "@/components/icons";
 import WalletButton from "@/components/wallet-button";
 
 export default function Header() {
@@ -18,8 +18,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
-          <DogPaw className="h-7 w-7 text-primary" />
-          <span className="hidden sm:inline-block">Meme Token Mania</span>
+          <Logo className="h-7 w-7 text-primary" />
+          <span className="hidden sm:inline-block">Neural AI</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           {navLinks.map((link) => (
@@ -42,8 +42,8 @@ export default function Header() {
             <SheetContent side="right">
               <nav className="grid gap-6 text-lg font-medium mt-8">
                 <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
-                  <DogPaw className="h-6 w-6 text-primary" />
-                  <span>Meme Token Mania</span>
+                  <Logo className="h-6 w-6 text-primary" />
+                  <span>Neural AI</span>
                 </Link>
                 {navLinks.map((link) => (
                    <Link key={link.href} href={link.href} className="transition-colors hover:text-primary">
