@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import WalletButton from '../wallet-button';
 const TOKEN_PRICE_IN_SOL = 0.00005;
 const MIN_PURCHASE_SOL = 0.1;
 const MAX_PURCHASE_SOL = 10;
-const PRESALE_PROGRESS = 75;
+const PRESALE_GOAL_SOL = 10000;
 const PRESALE_WALLET_ADDRESS = 'YOUR_PRESALE_WALLET_ADDRESS_HERE'; // IMPORTANT: Replace with your actual presale wallet address
 
 export default function PresaleSection() {
@@ -22,6 +22,29 @@ export default function PresaleSection() {
   const { publicKey, sendTransaction } = useWallet();
   const { toast } = useToast();
   const [isBuying, setIsBuying] = useState(false);
+  const [presaleProgress, setPresaleProgress] = useState(0);
+  const [solRaised, setSolRaised] = useState(0);
+
+  useEffect(() => {
+    const fetchPresaleBalance = async () => {
+      if (PRESALE_WALLET_ADDRESS !== 'YOUR_PRESALE_WALLET_ADDRESS_HERE') {
+        try {
+          const presalePublicKey = new PublicKey(PRESALE_WALLET_ADDRESS);
+          const balance = await connection.getBalance(presalePublicKey);
+          const solBalance = balance / LAMPORTS_PER_SOL;
+          setSolRaised(solBalance);
+          setPresaleProgress((solBalance / PRESALE_GOAL_SOL) * 100);
+        } catch (error) {
+          console.error("Failed to fetch presale balance:", error);
+        }
+      }
+    };
+
+    fetchPresaleBalance();
+    const interval = setInterval(fetchPresaleBalance, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [connection]);
 
   const solAmount = useMemo(() => {
     const numTokens = parseFloat(tokenAmount);
@@ -104,12 +127,12 @@ export default function PresaleSection() {
             <div className="space-y-2 pt-4">
               <div className="flex justify-between items-center text-sm text-muted-foreground">
                 <span>Presale Progress</span>
-                <span>{PRESALE_PROGRESS}% Complete</span>
+                <span>{presaleProgress.toFixed(2)}% Complete</span>
               </div>
-              <Progress value={PRESALE_PROGRESS} aria-label={`${PRESALE_PROGRESS}% of presale complete`}/>
+              <Progress value={presaleProgress} aria-label={`${presaleProgress.toFixed(2)}% of presale complete`}/>
               <div className="flex justify-between items-center text-xs text-muted-foreground">
-                <span>0 SOL</span>
-                <span>10,000 SOL</span>
+                <span>{solRaised.toLocaleString()} SOL</span>
+                <span>{PRESALE_GOAL_SOL.toLocaleString()} SOL</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground pt-4">

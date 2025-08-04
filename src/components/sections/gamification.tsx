@@ -47,6 +47,10 @@ export default function GamificationSection() {
     }
   }
 
+  // NOTE: The leaderboard data below is for demonstration purposes.
+  // A real-world implementation would require a backend service to
+  // track user contributions and XP in real-time. This typically involves
+  // a database and an API to query the ranked data.
   const leaderboard = [
     { rank: 1, user: "0x12...aBcd", contribution: "10.5 SOL", xp: 12500 },
     { rank: 2, user: "0x34...eFgH", contribution: "9.8 SOL", xp: 11200 },
