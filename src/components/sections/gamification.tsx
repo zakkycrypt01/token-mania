@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,8 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote, Twitter, WandSparkles, ArrowRight } from "lucide-react";
 import { generateQuests, Quest } from '@/ai/flows/generate-quests-flow';
 import { getLeaderboardFlow } from '@/ai/flows/get-leaderboard-flow';
-import { LeaderboardEntry } from '@/services/firestore';
+import { LeaderboardEntry, getUser } from '@/services/firestore';
 import { Skeleton } from '../ui/skeleton';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { claimQuest } from '@/ai/flows/claim-quest-flow';
+import { useToast } from '@/hooks/use-toast';
+
 
 type QuestWithStatus = Quest & { completed: boolean; action: () => void; cta: string };
 
@@ -20,12 +24,38 @@ export default function GamificationSection() {
   const [loadingQuests, setLoadingQuests] = useState(true);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
+  const [claimingQuest, setClaimingQuest] = useState<string | null>(null);
 
-  const handleQuestAction = (questToComplete: QuestWithStatus) => {
-    questToComplete.action();
-    setQuests(quests.map(quest => 
-      quest.title === questToComplete.title ? { ...quest, completed: true } : quest
-    ));
+  const { publicKey } = useWallet();
+  const { toast } = useToast();
+
+  const handleQuestAction = async (questToComplete: Quest) => {
+    if (!publicKey) {
+      toast({ title: "Connect Wallet", description: "Please connect your wallet to claim quests.", variant: "destructive" });
+      return;
+    }
+    
+    // Execute the client-side action (e.g., scroll, open link)
+    const { action } = getQuestAction(questToComplete);
+    action();
+
+    setClaimingQuest(questToComplete.title);
+    try {
+      const result = await claimQuest({ wallet: publicKey.toBase58(), quest: questToComplete });
+      if (result.success) {
+        toast({ title: "Quest Completed!", description: result.message });
+        // Optimistically update the UI
+        setQuests(quests.map(q => q.title === questToComplete.title ? { ...q, completed: true } : q));
+        // Refresh leaderboard to show new XP
+        fetchLeaderboard();
+      } else {
+        toast({ title: "Error", description: result.message, variant: "destructive" });
+      }
+    } catch (error: any) {
+        toast({ title: "Error", description: "An error occurred while claiming the quest.", variant: "destructive" });
+    } finally {
+        setClaimingQuest(null);
+    }
   };
   
   const getQuestAction = (quest: Quest): { action: () => void; cta: string } => {
@@ -48,49 +78,59 @@ export default function GamificationSection() {
     return { action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), cta: 'Learn More' };
   };
 
+  const fetchQuests = useCallback(async (walletAddress?: string) => {
+    try {
+      setLoadingQuests(true);
+      const [questsResponse, userResponse] = await Promise.all([
+        generateQuests(),
+        walletAddress ? getUser(walletAddress) : Promise.resolve(null),
+      ]);
+      
+      const completedQuests = userResponse?.completedQuests || [];
+
+      const questsWithStatus = questsResponse.quests.map(quest => ({
+          ...quest,
+          completed: completedQuests.includes(quest.title),
+          ...getQuestAction(quest)
+      }));
+      setQuests(questsWithStatus);
+    } catch (error) {
+      console.error("Failed to generate quests:", error);
+      const defaultQuests: Quest[] = [
+        { title: "The Genesis Share", description: "Share the presale on X/Twitter.", reward: "100 XP", icon: "Twitter" },
+        { title: "Community Explorer", description: "Join our Telegram and Discord.", reward: "150 XP", icon: "Users" },
+        { title: "Meme Architect", description: "Create a meme with the AI Generator.", reward: "250 XP", icon: "WandSparkles" },
+        { title: "First Contact", description: "Make your first presale purchase.", reward: "200 XP", icon: "Gem" },
+        { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: "Star" },
+      ];
+      setQuests(defaultQuests.map(q => ({...q, completed: false, ...getQuestAction(q)})));
+    } finally {
+      setLoadingQuests(false);
+    }
+  }, []);
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLoadingLeaderboard(true);
+      const response = await getLeaderboardFlow();
+      setLeaderboard(response.leaderboard);
+    } catch (error) {
+      console.error("Failed to fetch leaderboard:", error);
+    } finally {
+      setLoadingLeaderboard(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchQuests = async () => {
-      try {
-        setLoadingQuests(true);
-        const response = await generateQuests();
-        const questsWithStatus = response.quests.map(quest => ({
-            ...quest,
-            completed: false,
-            ...getQuestAction(quest)
-        }));
-        setQuests(questsWithStatus);
-      } catch (error) {
-        console.error("Failed to generate quests:", error);
-        // Fallback to some default quests if generation fails
-        const defaultQuests: Quest[] = [
-          { title: "The Genesis Share", description: "Share the presale on X/Twitter.", reward: "100 XP", icon: "Twitter" },
-          { title: "Community Explorer", description: "Join our Telegram and Discord.", reward: "150 XP", icon: "Users" },
-          { title: "Meme Architect", description: "Create a meme with the AI Generator.", reward: "250 XP", icon: "WandSparkles" },
-          { title: "First Contact", description: "Make your first presale purchase.", reward: "200 XP", icon: "Gem" },
-          { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: "Star" },
-        ];
-        setQuests(defaultQuests.map(q => ({...q, completed: false, ...getQuestAction(q)})));
-      } finally {
-        setLoadingQuests(false);
-      }
-    };
-
-    const fetchLeaderboard = async () => {
-      try {
-        setLoadingLeaderboard(true);
-        const response = await getLeaderboardFlow();
-        setLeaderboard(response.leaderboard);
-      } catch (error) {
-        console.error("Failed to fetch leaderboard:", error);
-      } finally {
-        setLoadingLeaderboard(false);
-      }
-    };
-
-    fetchQuests();
     fetchLeaderboard();
+    const interval = setInterval(fetchLeaderboard, 30000); // Refresh leaderboard periodically
+    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    fetchQuests(publicKey?.toBase58());
+  }, [publicKey, fetchQuests]);
+
 
   const getQuestIcon = (iconName: string) => {
     switch(iconName) {
@@ -156,12 +196,12 @@ export default function GamificationSection() {
                     <Badge variant="secondary" className="w-fit">Reward: {quest.reward}</Badge>
                      <Button 
                         onClick={() => handleQuestAction(quest)} 
-                        disabled={quest.completed}
+                        disabled={quest.completed || claimingQuest === quest.title}
                         variant={quest.completed ? "secondary" : "default"}
                         className="w-full"
                       >
-                      {quest.completed ? 'Completed' : quest.cta}
-                      {!quest.completed && <ArrowRight className="ml-2 h-4 w-4" />}
+                      {claimingQuest === quest.title ? 'Claiming...' : quest.completed ? 'Completed' : quest.cta}
+                      {!quest.completed && claimingQuest !== quest.title && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </CardContent>
                 </Card>
@@ -214,7 +254,7 @@ export default function GamificationSection() {
                     <TableRow>
                         <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                             Be the first to contribute and claim your spot in the Hall of Memes!
-                        </TableCell>
+                        </TableCell>                    
                     </TableRow>
                 )}
               </TableBody>
@@ -261,8 +301,7 @@ function TwitterIcon(props: React.SVGProps<SVGSVGElement>) {
 function WhaleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.6 2.5c-2.4 1.3-4.1 3.2-5.1 5.3-1.8 3.7-2.7 7.7-2.5 11.7.2 4.1 2.9 6.2 5.5 5.5 2.5-.7 3.5-3.8 3.5-7.1 0-2.5-.8-5-2.2-7.1-.6-1.1-1.3-2-2.1-2.8 2.3.2 4.3-.3 6-1.5 1.7-1.2 2.9-2.9 3.5-5-.2 0-.4 0-.6-.1-1.3-.3-2.5-.8-3.6-1.5z" />
-      <path d="M6.1 8.2C6.1 8.2 5.4 9 4.2 9c-1.2 0-2.3-1.2-2.3-2.4S3 4.2 4.2 4.2c1.2 0 1.9.8 1.9.8" />
+      <path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.6.11.82-.26.82-.57v-2.05c-2.8.6-3.39-1.35-3.39-1.35-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .31.22.68.83.57A10 10 0 0 0 22 12 10 10 0 0 0 12 2Z"/>
     </svg>
-  )
+  );
 }

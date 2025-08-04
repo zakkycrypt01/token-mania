@@ -31,27 +31,27 @@ export default function PresaleSection() {
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    const fetchPresaleBalance = async () => {
-      if (PRESALE_WALLET_ADDRESS !== 'YOUR_PRESALE_WALLET_ADDRESS_HERE') {
-        try {
-          const presalePublicKey = new PublicKey(PRESALE_WALLET_ADDRESS);
-          const balance = await connection.getBalance(presalePublicKey);
-          const solBalance = balance / LAMPORTS_PER_SOL;
-          setSolRaised(solBalance);
-          setPresaleProgress((solBalance / PRESALE_GOAL_SOL) * 100);
-        } catch (error) {
-          console.error("Failed to fetch presale balance:", error);
-        }
+  const fetchPresaleBalance = useCallback(async () => {
+    if (PRESALE_WALLET_ADDRESS !== 'YOUR_PRESALE_WALLET_ADDRESS_HERE') {
+      try {
+        const presalePublicKey = new PublicKey(PRESALE_WALLET_ADDRESS);
+        const balance = await connection.getBalance(presalePublicKey);
+        const solBalance = balance / LAMPORTS_PER_SOL;
+        setSolRaised(solBalance);
+        setPresaleProgress((solBalance / PRESALE_GOAL_SOL) * 100);
+      } catch (error) {
+        console.error("Failed to fetch presale balance:", error);
       }
-    };
+    }
+  }, [connection]);
 
+  useEffect(() => {
     if (isClient) {
       fetchPresaleBalance();
       const interval = setInterval(fetchPresaleBalance, 30000); // Refresh every 30 seconds
       return () => clearInterval(interval);
     }
-  }, [connection, isClient]);
+  }, [isClient, fetchPresaleBalance]);
 
   const solAmount = useMemo(() => {
     const numTokens = parseFloat(tokenAmount);
@@ -112,13 +112,16 @@ export default function PresaleSection() {
 
         toast({ title: "Purchase Successful!", description: `You successfully purchased ${tokenAmount} tokens.` });
 
+        // Refresh balance after successful purchase
+        fetchPresaleBalance();
+
     } catch (error: any) {
         console.error("Transaction failed", error);
         toast({ title: "Transaction Failed", description: error.message, variant: "destructive" });
     } finally {
         setIsBuying(false);
     }
-}, [publicKey, connection, sendTransaction, solAmount, tokenAmount, toast]);
+}, [publicKey, connection, sendTransaction, solAmount, tokenAmount, toast, fetchPresaleBalance]);
   
   const isPurchaseDisabled = solAmount < MIN_PURCHASE_SOL || solAmount > MAX_PURCHASE_SOL || isBuying;
 
