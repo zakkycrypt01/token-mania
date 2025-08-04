@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Twitter, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import Link from "next/link";
 import type { SVGProps } from "react";
+
+function TwitterIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
+}
 
 function DiscordIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -32,7 +40,7 @@ export default function CommunitySection() {
           <div className="mt-8 flex justify-center gap-4 md:gap-6">
             <Button size="lg" asChild className="bg-sky-500 hover:bg-sky-600 text-white">
               <Link href="#" target="_blank" rel="noopener noreferrer">
-                <Twitter className="mr-2 h-5 w-5" />
+                <TwitterIcon className="mr-2 h-5 w-5" />
                 Twitter / X
               </Link>
             </Button>
