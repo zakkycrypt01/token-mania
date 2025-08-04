@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote, Twitter } from "lucide-react";
+import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote, Twitter, WandSparkles } from "lucide-react";
 import { generateQuests, Quest } from '@/ai/flows/generate-quests-flow';
 import { getLeaderboardFlow } from '@/ai/flows/get-leaderboard-flow';
 import { LeaderboardEntry } from '@/services/firestore';
@@ -29,9 +29,9 @@ export default function GamificationSection() {
         setQuests([
           { title: "The Genesis Share", description: "Share the presale on X/Twitter.", reward: "100 XP", icon: "Twitter" },
           { title: "Community Explorer", description: "Join our Telegram and Discord.", reward: "150 XP", icon: "Users" },
-          { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: "Star" },
+          { title: "Meme Architect", description: "Create a meme with the AI Generator.", reward: "250 XP", icon: "WandSparkles" },
           { title: "First Contact", description: "Make your first presale purchase.", reward: "200 XP", icon: "Gem" },
-          { title: "Meme Architect", description: "Contribute a meme idea in Discord.", reward: "250 XP", icon: "MessageSquareQuote" },
+          { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: "Star" },
         ]);
       } finally {
         setLoadingQuests(false);
@@ -61,6 +61,7 @@ export default function GamificationSection() {
       case "Star": return <Star className="w-6 h-6" />;
       case "Gem": return <Gem className="w-6 h-6" />;
       case "MessageSquareQuote": return <MessageSquareQuote className="w-6 h-6" />;
+      case "WandSparkles": return <WandSparkles className="w-6 h-6" />;
       default: return <Star className="w-6 h-6" />;
     }
   }

@@ -5,6 +5,7 @@ import AboutSection from "@/components/sections/about";
 import TokenomicsSection from "@/components/sections/tokenomics";
 import RoadmapSection from "@/components/sections/roadmap";
 import GamificationSection from "@/components/sections/gamification";
+import MemeGeneratorSection from "@/components/sections/meme-generator";
 import CommunitySection from "@/components/sections/community";
 import FaqSection from "@/components/sections/faq";
 import Footer from "@/components/layout/footer";
@@ -20,6 +21,7 @@ export default function Home() {
         <TokenomicsSection />
         <RoadmapSection />
         <GamificationSection />
+        <MemeGeneratorSection />
         <CommunitySection />
         <FaqSection />
       </main>

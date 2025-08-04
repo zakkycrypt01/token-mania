@@ -11,6 +11,7 @@ export default function Header() {
     { href: "#tokenomics", label: "Tokenomics" },
     { href: "#roadmap", label: "Roadmap" },
     { href: "#quests", label: "Quests" },
+    { href: "#meme-generator", label: "Meme AI" },
     { href: "#leaderboard", label: "Leaderboard" },
   ];
 
