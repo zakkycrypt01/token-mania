@@ -34,7 +34,7 @@ const generateMemeFlow = ai.defineFlow(
   },
   async (input) => {
     const memeId = uuidv4();
-    const fullPrompt = `A funny meme about "${input.prompt}". The meme should be in a modern, internet-culture style. It can contain text, but it should be funny and relevant to the prompt.`;
+    const fullPrompt = `Create a top-notch, high-quality meme about "${input.prompt}". The meme must have clear, legible text and a modern, visually appealing design. The humor should be witty and relevant to internet culture.`;
 
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
