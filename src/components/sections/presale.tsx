@@ -9,6 +9,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useToast } from '@/hooks/use-toast';
 import WalletButton from '../wallet-button';
+import { addContribution } from '@/services/firestore';
 
 const TOKEN_PRICE_IN_SOL = 0.00005;
 const MIN_PURCHASE_SOL = 0.1;
@@ -24,6 +25,11 @@ export default function PresaleSection() {
   const [isBuying, setIsBuying] = useState(false);
   const [presaleProgress, setPresaleProgress] = useState(0);
   const [solRaised, setSolRaised] = useState(0);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const fetchPresaleBalance = async () => {
@@ -40,11 +46,12 @@ export default function PresaleSection() {
       }
     };
 
-    fetchPresaleBalance();
-    const interval = setInterval(fetchPresaleBalance, 30000); // Refresh every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [connection]);
+    if (isClient) {
+      fetchPresaleBalance();
+      const interval = setInterval(fetchPresaleBalance, 30000); // Refresh every 30 seconds
+      return () => clearInterval(interval);
+    }
+  }, [connection, isClient]);
 
   const solAmount = useMemo(() => {
     const numTokens = parseFloat(tokenAmount);
@@ -101,6 +108,8 @@ export default function PresaleSection() {
 
         await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature });
         
+        await addContribution(publicKey.toBase58(), solAmount);
+
         toast({ title: "Purchase Successful!", description: `You successfully purchased ${tokenAmount} tokens.` });
 
     } catch (error: any) {
@@ -146,7 +155,9 @@ export default function PresaleSection() {
               <CardDescription>Secure your tokens before they're gone. Connect your wallet to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {!publicKey ? (
+              {!isClient ? (
+                <div className='w-full bg-primary/10 h-11 rounded-md animate-pulse' />
+              ) : !publicKey ? (
                  <WalletButton />
               ) : (
                 <>
@@ -176,7 +187,7 @@ export default function PresaleSection() {
                 </>
               )}
             </CardContent>
-             {publicKey && (
+             {isClient && publicKey && (
                 <CardFooter>
                   <Button size="lg" className="w-full" disabled={isPurchaseDisabled} onClick={handleBuy}>
                     {isBuying ? "Processing..." : "Buy Now"}

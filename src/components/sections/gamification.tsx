@@ -5,13 +5,17 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote } from "lucide-react";
+import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote, Twitter } from "lucide-react";
 import { generateQuests, Quest } from '@/ai/flows/generate-quests-flow';
+import { getLeaderboardFlow } from '@/ai/flows/get-leaderboard-flow';
+import { LeaderboardEntry } from '@/services/firestore';
 import { Skeleton } from '../ui/skeleton';
 
 export default function GamificationSection() {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [loadingQuests, setLoadingQuests] = useState(true);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
 
   useEffect(() => {
     const fetchQuests = async () => {
@@ -33,12 +37,26 @@ export default function GamificationSection() {
         setLoadingQuests(false);
       }
     };
+
+    const fetchLeaderboard = async () => {
+      try {
+        setLoadingLeaderboard(true);
+        const response = await getLeaderboardFlow();
+        setLeaderboard(response.leaderboard);
+      } catch (error) {
+        console.error("Failed to fetch leaderboard:", error);
+      } finally {
+        setLoadingLeaderboard(false);
+      }
+    };
+
     fetchQuests();
+    fetchLeaderboard();
   }, []);
 
   const getQuestIcon = (iconName: string) => {
     switch(iconName) {
-      case "Twitter": return <TwitterIcon className="w-6 h-6" />;
+      case "Twitter": return <Twitter className="w-6 h-6" />;
       case "Users": return <Users className="w-6 h-6" />;
       case "Star": return <Star className="w-6 h-6" />;
       case "Gem": return <Gem className="w-6 h-6" />;
@@ -46,18 +64,6 @@ export default function GamificationSection() {
       default: return <Star className="w-6 h-6" />;
     }
   }
-
-  // NOTE: The leaderboard data below is for demonstration purposes.
-  // A real-world implementation would require a backend service to
-  // track user contributions and XP in real-time. This typically involves
-  // a database and an API to query the ranked data.
-  const leaderboard = [
-    { rank: 1, user: "0x12...aBcd", contribution: "10.5 SOL", xp: 12500 },
-    { rank: 2, user: "0x34...eFgH", contribution: "9.8 SOL", xp: 11200 },
-    { rank: 3, user: "0x56...iJkL", contribution: "8.2 SOL", xp: 9800 },
-    { rank: 4, user: "0x78...mNoP", contribution: "7.1 SOL", xp: 8500 },
-    { rank: 5, user: "0x90...qRsT", contribution: "6.5 SOL", xp: 7600 },
-  ];
 
   const achievements = [
     { title: "First Buyer", icon: <ShieldCheck className="w-8 h-8 text-yellow-500" />, tier: "Bronze" },
@@ -132,19 +138,36 @@ export default function GamificationSection() {
                 <TableRow>
                   <TableHead className="w-[100px]">Rank</TableHead>
                   <TableHead>User</TableHead>
-                  <TableHead>Contribution</TableHead>
+                  <TableHead>Contribution (SOL)</TableHead>
                   <TableHead className="text-right">XP</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {leaderboard.map((entry) => (
-                  <TableRow key={entry.rank} className="hover:bg-primary/5">
-                    <TableCell className="font-medium text-primary text-lg">{entry.rank}</TableCell>
-                    <TableCell className="font-mono">{entry.user}</TableCell>
-                    <TableCell>{entry.contribution}</TableCell>
-                    <TableCell className="text-right">{entry.xp.toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
+                {loadingLeaderboard ? (
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                        <TableCell><Skeleton className="h-5 w-5" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : leaderboard.length > 0 ? (
+                  leaderboard.map((entry) => (
+                    <TableRow key={entry.rank} className="hover:bg-primary/5">
+                      <TableCell className="font-medium text-primary text-lg">{entry.rank}</TableCell>
+                      <TableCell className="font-mono">{entry.user}</TableCell>
+                      <TableCell>{entry.contribution.toFixed(4)}</TableCell>
+                      <TableCell className="text-right">{entry.xp.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                    <TableRow>
+                        <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                            Be the first to contribute and claim your spot in the Hall of Memes!
+                        </TableCell>
+                    </TableRow>
+                )}
               </TableBody>
             </Table>
           </Card>
