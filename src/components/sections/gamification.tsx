@@ -2,37 +2,75 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote, Twitter, WandSparkles } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Award, ShieldCheck, Users, Rocket, Gem, Star, MessageSquareQuote, Twitter, WandSparkles, ArrowRight } from "lucide-react";
 import { generateQuests, Quest } from '@/ai/flows/generate-quests-flow';
 import { getLeaderboardFlow } from '@/ai/flows/get-leaderboard-flow';
 import { LeaderboardEntry } from '@/services/firestore';
 import { Skeleton } from '../ui/skeleton';
 
+type QuestWithStatus = Quest & { completed: boolean; action: () => void; cta: string };
+
 export default function GamificationSection() {
-  const [quests, setQuests] = useState<Quest[]>([]);
+  const [quests, setQuests] = useState<QuestWithStatus[]>([]);
   const [loadingQuests, setLoadingQuests] = useState(true);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
+
+  const handleQuestAction = (questToComplete: QuestWithStatus) => {
+    questToComplete.action();
+    setQuests(quests.map(quest => 
+      quest.title === questToComplete.title ? { ...quest, completed: true } : quest
+    ));
+  };
+  
+  const getQuestAction = (quest: Quest): { action: () => void; cta: string } => {
+    const title = quest.title.toLowerCase();
+    if (title.includes('meme')) {
+      return { action: () => document.getElementById('meme-generator')?.scrollIntoView({ behavior: 'smooth' }), cta: 'Create Meme' };
+    }
+    if (title.includes('twitter')) {
+      return { action: () => window.open('https://twitter.com', '_blank'), cta: 'Share on X' };
+    }
+    if (title.includes('telegram')) {
+      return { action: () => window.open('https://telegram.org', '_blank'), cta: 'Join Telegram' };
+    }
+     if (title.includes('discord')) {
+      return { action: () => window.open('https://discord.com', '_blank'), cta: 'Join Discord' };
+    }
+    if (title.includes('purchase') || title.includes('presale')) {
+       return { action: () => document.getElementById('presale')?.scrollIntoView({ behavior: 'smooth' }), cta: 'Go to Presale' };
+    }
+    return { action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), cta: 'Learn More' };
+  };
+
 
   useEffect(() => {
     const fetchQuests = async () => {
       try {
         setLoadingQuests(true);
         const response = await generateQuests();
-        setQuests(response.quests);
+        const questsWithStatus = response.quests.map(quest => ({
+            ...quest,
+            completed: false,
+            ...getQuestAction(quest)
+        }));
+        setQuests(questsWithStatus);
       } catch (error) {
         console.error("Failed to generate quests:", error);
         // Fallback to some default quests if generation fails
-        setQuests([
+        const defaultQuests: Quest[] = [
           { title: "The Genesis Share", description: "Share the presale on X/Twitter.", reward: "100 XP", icon: "Twitter" },
           { title: "Community Explorer", description: "Join our Telegram and Discord.", reward: "150 XP", icon: "Users" },
           { title: "Meme Architect", description: "Create a meme with the AI Generator.", reward: "250 XP", icon: "WandSparkles" },
           { title: "First Contact", description: "Make your first presale purchase.", reward: "200 XP", icon: "Gem" },
           { title: "Lore Seeker", description: "Visit all info pages on the site.", reward: "50 XP", icon: "Star" },
-        ]);
+        ];
+        setQuests(defaultQuests.map(q => ({...q, completed: false, ...getQuestAction(q)})));
       } finally {
         setLoadingQuests(false);
       }
@@ -100,6 +138,7 @@ export default function GamificationSection() {
                   </CardHeader>
                   <CardContent className="mt-auto">
                     <Skeleton className="h-6 w-[100px]" />
+                     <Skeleton className="h-10 w-full mt-4" />
                   </CardContent>
                 </Card>
               ))
@@ -113,8 +152,17 @@ export default function GamificationSection() {
                       <CardDescription>{quest.description}</CardDescription>
                     </div>
                   </CardHeader>
-                  <CardContent className="mt-auto">
-                    <Badge variant="secondary">Reward: {quest.reward}</Badge>
+                  <CardContent className="mt-auto flex flex-col gap-4">
+                    <Badge variant="secondary" className="w-fit">Reward: {quest.reward}</Badge>
+                     <Button 
+                        onClick={() => handleQuestAction(quest)} 
+                        disabled={quest.completed}
+                        variant={quest.completed ? "secondary" : "default"}
+                        className="w-full"
+                      >
+                      {quest.completed ? 'Completed' : quest.cta}
+                      {!quest.completed && <ArrowRight className="ml-2 h-4 w-4" />}
+                    </Button>
                   </CardContent>
                 </Card>
               ))
