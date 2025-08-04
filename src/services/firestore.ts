@@ -1,7 +1,8 @@
+
 'use server';
 
 import { firestore } from '@/lib/firebase';
-import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc, setDoc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
+import { collection, addDoc, getDocs, serverTimestamp, doc, getDoc, setDoc, updateDoc, arrayUnion, increment, collectionGroup, query, where, limit } from 'firebase/firestore';
 
 export interface User {
     wallet: string;
@@ -114,5 +115,30 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
     } catch (error) {
         console.error("Error fetching leaderboard from Firestore: ", error);
         return []; // Return empty on error
+    }
+}
+
+
+export async function recordMemeGeneration(wallet: string) {
+    try {
+        const memeGenRef = collection(firestore, 'users', wallet, 'memeGenerations');
+        await addDoc(memeGenRef, {
+            timestamp: serverTimestamp(),
+        });
+    } catch (error) {
+        console.error("Error recording meme generation:", error);
+        // We don't throw here, as it's not critical to the user's primary action
+    }
+}
+
+export async function hasUserGeneratedMeme(wallet: string): Promise<boolean> {
+    try {
+        const memeGenRef = collection(firestore, 'users', wallet, 'memeGenerations');
+        const q = query(memeGenRef, limit(1));
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty;
+    } catch (error) {
+        console.error("Error checking meme generation:", error);
+        return false;
     }
 }

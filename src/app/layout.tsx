@@ -4,6 +4,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 import WalletProvider from '@/components/providers/wallet-provider';
+import { WalletMiddleware } from '@/components/middleware/wallet-middleware';
 
 export const metadata: Metadata = {
   title: 'Neural AI',
@@ -24,7 +25,9 @@ export default function RootLayout({
       </head>
       <body className={cn("font-sans antialiased", "min-h-screen bg-background")}>
         <WalletProvider>
-          {children}
+          <WalletMiddleware>
+            {children}
+          </WalletMiddleware>
         </WalletProvider>
         <Toaster />
       </body>

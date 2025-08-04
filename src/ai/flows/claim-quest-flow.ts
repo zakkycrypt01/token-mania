@@ -9,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { claimQuestReward, getUser } from '@/services/firestore';
+import { claimQuestReward, getUser, hasUserGeneratedMeme } from '@/services/firestore';
 import { z } from 'zod';
 import type { Quest } from './generate-quests-flow';
 
@@ -51,6 +51,14 @@ const claimQuestFlow = ai.defineFlow(
           success: false,
           message: 'You have already completed this quest.',
         };
+      }
+
+      // Server-side verification for specific quests
+      if (quest.title.toLowerCase().includes('meme')) {
+          const hasGenerated = await hasUserGeneratedMeme(wallet);
+          if (!hasGenerated) {
+              return { success: false, message: "Verification failed. Please generate a meme first." };
+          }
       }
 
       const xpToAward = parseInt(quest.reward.split(' ')[0], 10);

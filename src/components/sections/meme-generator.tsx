@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -9,14 +10,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { generateMeme } from '@/ai/flows/generate-meme-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Download } from 'lucide-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 export default function MemeGeneratorSection() {
   const [prompt, setPrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const { publicKey } = useWallet();
 
   const handleGenerate = async () => {
+    if (!publicKey) {
+      toast({
+        title: 'Connect Wallet',
+        description: 'Please connect your wallet to use the meme generator.',
+        variant: 'destructive',
+      });
+      return;
+    }
     if (!prompt) {
       toast({
         title: 'Error',
@@ -31,6 +42,10 @@ export default function MemeGeneratorSection() {
       const result = await generateMeme({ prompt });
       if (result.imageUrl) {
         setGeneratedImage(result.imageUrl);
+        toast({
+          title: 'Meme Generated!',
+          description: 'Your masterpiece is ready. You can now complete the "Meme Architect" quest.',
+        });
       } else {
         throw new Error('Image generation failed to return a URL.');
       }

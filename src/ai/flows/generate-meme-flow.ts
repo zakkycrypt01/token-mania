@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI-powered meme generator.
@@ -9,7 +10,9 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
+import { recordMemeGeneration } from '@/services/firestore';
+import { headers } from 'next/headers';
+import { getWalletFromHeaders } from '@/lib/utils';
 
 const GenerateMemeInputSchema = z.object({
   prompt: z.string().describe('A descriptive prompt for the meme to be generated.'),
@@ -33,7 +36,6 @@ const generateMemeFlow = ai.defineFlow(
     outputSchema: GenerateMemeOutputSchema,
   },
   async (input) => {
-    const memeId = uuidv4();
     const fullPrompt = `Create a top-notch, high-quality meme about "${input.prompt}". The meme must have clear, legible text and a modern, visually appealing design. The humor should be witty and relevant to internet culture.`;
 
     const { media } = await ai.generate({
@@ -46,6 +48,11 @@ const generateMemeFlow = ai.defineFlow(
 
     if (!media || !media.url) {
         throw new Error("Image generation failed or returned no URL.");
+    }
+
+    const wallet = getWalletFromHeaders(headers());
+    if (wallet) {
+      await recordMemeGeneration(wallet);
     }
     
     return {
