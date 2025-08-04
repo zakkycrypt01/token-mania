@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for claiming quest rewards.
@@ -19,13 +20,13 @@ const QuestSchema = z.object({
     icon: z.enum(["Twitter", "Users", "Star", "Gem", "MessageSquareQuote", "WandSparkles"]).describe("The icon for the quest. Choose one from the list."),
 });
 
-export const ClaimQuestInputSchema = z.object({
+const ClaimQuestInputSchema = z.object({
   wallet: z.string().describe("The user's wallet address."),
   quest: QuestSchema,
 });
 export type ClaimQuestInput = z.infer<typeof ClaimQuestInputSchema>;
 
-export const ClaimQuestOutputSchema = z.object({
+const ClaimQuestOutputSchema = z.object({
   success: z.boolean(),
   message: z.string(),
   newXp: z.number().optional(),
