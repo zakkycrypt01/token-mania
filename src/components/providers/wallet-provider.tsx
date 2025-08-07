@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { FC, useMemo } from 'react';
@@ -6,7 +7,12 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
     PhantomWalletAdapter,
 } from '@solana/wallet-adapter-phantom';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets'
+import {
+    SolflareWalletAdapter,
+} from '@solana/wallet-adapter-solflare';
+import {
+    TorusWalletAdapter,
+} from '@solana/wallet-adapter-torus';
 import {
     WalletModalProvider,
 } from '@solana/wallet-adapter-react-ui';
@@ -20,7 +26,8 @@ const WalletProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
     const wallets = useMemo(
         () => [
             new PhantomWalletAdapter(),
-            new SolflareWalletAdapter()
+            new SolflareWalletAdapter({ network }),
+            new TorusWalletAdapter(),
         ],
         [network]
     );

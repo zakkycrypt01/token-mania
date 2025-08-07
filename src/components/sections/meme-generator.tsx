@@ -114,9 +114,10 @@ export default function MemeGeneratorSection() {
                 <Image
                     src={generatedImage}
                     alt="Generated Meme"
-                    layout="fill"
-                    objectFit="cover"
+                    fill
+                    style={{ objectFit: 'cover' }}
                     className="rounded-xl shadow-lg glow-shadow"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <Button onClick={handleDownload} size="icon" className="absolute top-4 right-4 z-10">
                     <Download />

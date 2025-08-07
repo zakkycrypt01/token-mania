@@ -19,10 +19,11 @@ export default function AboutSection() {
             <Image
               src="/banner.png"
               alt="AI Brain"
-              layout="fill"
-              objectFit="cover"
+              fill
+              style={{ objectFit: 'cover' }}
               className="rounded-xl shadow-lg animate-pulse glow-shadow"
               data-ai-hint="AI brain"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
           <div className="space-y-8">

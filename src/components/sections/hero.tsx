@@ -10,11 +10,12 @@ export default function HeroSection() {
         <Image
           src="https://placehold.co/1920x1080.png"
           alt="Neural network visualization"
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: 'cover' }}
           className="opacity-10"
           data-ai-hint="neural network"
           priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-transparent" />
