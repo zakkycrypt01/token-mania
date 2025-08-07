@@ -26,7 +26,7 @@ export default function HeroSection() {
             The Future of Decentralized Intelligence is Here!
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold font-headline tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-white to-neutral-300">
-            Welcome to <span className="text-primary">Neural AI</span>
+            Welcome to <span className="text-primary">Neura AI</span>
           </h1>
           <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             Join the most innovative presale event in crypto history. Contribute to the AI revolution, climb the leaderboard, and secure your stake in the future of intelligence.

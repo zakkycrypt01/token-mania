@@ -30,7 +30,7 @@ export async function generateQuests(): Promise<GenerateQuestsOutput> {
 const prompt = ai.definePrompt({
   name: 'generateQuestsPrompt',
   output: {schema: GenerateQuestsOutputSchema},
-  prompt: `You are a game designer for a meme token project called Neural AI.
+  prompt: `You are a game designer for a meme token project called Neura AI.
 
 Generate a list of 5 creative and engaging quests for the user to complete.
 The quests should be related to social media engagement, community participation, and using the platform's features, including the new AI Meme Generator.

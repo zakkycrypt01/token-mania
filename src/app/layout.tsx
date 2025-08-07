@@ -7,7 +7,7 @@ import WalletProvider from '@/components/providers/wallet-provider';
 import { WalletMiddleware } from '@/components/middleware/wallet-middleware';
 
 export const metadata: Metadata = {
-  title: 'Neural AI',
+  title: 'Neura AI',
   description: 'The most epic gamified AI token presale on Solana!',
 };
 

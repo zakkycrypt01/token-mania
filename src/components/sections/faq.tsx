@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function FaqSection() {
   const faqs = [
     {
-      question: "What is Neural AI?",
+      question: "What is Neura AI?",
       answer: "It's a revolutionary new token on the Solana blockchain that combines decentralized AI with a gamified user experience. We're making AI accessible and rewarding for everyone."
     },
     {

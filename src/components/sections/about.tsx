@@ -17,7 +17,7 @@ export default function AboutSection() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="relative aspect-square">
             <Image
-              src="https://placehold.co/600x600.png"
+              src="/banner.png"
               alt="AI Brain"
               layout="fill"
               objectFit="cover"

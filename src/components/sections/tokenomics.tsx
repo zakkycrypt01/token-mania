@@ -17,12 +17,14 @@ import {
 } from "@/components/ui/chart"
 
 const chartData = [
-    { category: "Presale", value: 40, fill: "hsl(var(--chart-1))" },
-    { category: "Liquidity", value: 30, fill: "hsl(var(--chart-2))" },
-    { category: "Team & Advisors", value: 10, fill: "hsl(var(--chart-3))" },
-    { category: "Marketing", value: 7, fill: "hsl(var(--chart-4))" },
-    { category: "Community Rewards", value: 10, fill: "hsl(var(--chart-5))" },
-    { category: "Product Development", value: 3, fill: "hsl(var(--secondary-foreground))" },
+    { category: "Presale", value: 17.5, fill: "hsl(var(--chart-1))" },
+    { category: "Liquidity", value: 20, fill: "hsl(var(--chart-2))" },
+    { category: "Marketing", value: 7.5, fill: "hsl(var(--chart-3))" },
+    { category: "Team", value: 5.5, fill: "hsl(var(--chart-4))" },
+    { category: "Product Development", value: 7.5, fill: "hsl(var(--chart-5))" },
+    { category: "Community Program", value: 5, fill: "hsl(var(--secondary-foreground))" },
+    { category: "Partnership", value: 7, fill: "hsl(var(--primary))" },
+    { category: "Reserve", value: 30, fill: "hsl(var(--muted))" },
 ]
 
 const chartConfig = {
@@ -37,21 +39,29 @@ const chartConfig = {
     label: "Liquidity",
     color: "hsl(var(--chart-2))",
   },
-  "Team & Advisors": {
-    label: "Team & Advisors",
-    color: "hsl(var(--chart-3))",
-  },
   marketing: {
     label: "Marketing",
-    color: "hsl(var(--chart-4))",
+    color: "hsl(var(--chart-3))",
   },
-  "Community Rewards": {
-    label: "Community Rewards",
-    color: "hsl(var(--chart-5))",
+  team: {
+    label: "Team",
+    color: "hsl(var(--chart-4))",
   },
   "Product Development": {
     label: "Product Development",
+    color: "hsl(var(--chart-5))",
+  },
+  "Community Program": {
+    label: "Community Program",
     color: "hsl(var(--secondary-foreground))",
+  },
+  partnership: {
+    label: "Partnership",
+    color: "hsl(var(--primary))",
+  },
+  reserve: {
+    label: "Reserve",
+    color: "hsl(var(--muted))",
   },
 }
 
