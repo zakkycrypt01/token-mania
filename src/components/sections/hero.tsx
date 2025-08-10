@@ -13,7 +13,7 @@ export default function HeroSection() {
     <section className="relative w-full h-[90vh] min-h-[700px] flex items-center justify-center text-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://placehold.co/1920x1080.png"
+          src="/image.png"
           alt="Neural network visualization"
           fill
           style={{ objectFit: 'cover' }}
