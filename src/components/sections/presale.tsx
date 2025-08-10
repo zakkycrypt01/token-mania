@@ -10,11 +10,12 @@ import { Transaction, SystemProgram, LAMPORTS_PER_SOL, PublicKey } from '@solana
 import { useToast } from '@/hooks/use-toast';
 import WalletButton from '../wallet-button';
 import { addContribution } from '@/services/firestore';
+import { useCountdownActive } from '@/components/countdown';
 
 const TOKEN_PRICE_IN_SOL = 0.00005;
 const MIN_PURCHASE_SOL = 0.1;
 const MAX_PURCHASE_SOL = 10;
-const PRESALE_GOAL_SOL = 10000;
+const PRESALE_GOAL_SOL = 200;
 const PRESALE_WALLET_ADDRESS = 'YOUR_PRESALE_WALLET_ADDRESS_HERE'; // IMPORTANT: Replace with your actual presale wallet address
 
 export default function PresaleSection() {
@@ -26,6 +27,7 @@ export default function PresaleSection() {
   const [presaleProgress, setPresaleProgress] = useState(0);
   const [solRaised, setSolRaised] = useState(0);
   const [isClient, setIsClient] = useState(false);
+  const isCountdownActive = useCountdownActive();
 
   useEffect(() => {
     setIsClient(true);
@@ -123,7 +125,7 @@ export default function PresaleSection() {
     }
 }, [publicKey, connection, sendTransaction, solAmount, tokenAmount, toast, fetchPresaleBalance]);
   
-  const isPurchaseDisabled = solAmount < MIN_PURCHASE_SOL || solAmount > MAX_PURCHASE_SOL || isBuying;
+  const isPurchaseDisabled = solAmount < MIN_PURCHASE_SOL || solAmount > MAX_PURCHASE_SOL || isBuying || isCountdownActive;
 
   return (
     <section id="presale" className="py-12 md:py-24 bg-background">
@@ -193,7 +195,7 @@ export default function PresaleSection() {
              {isClient && publicKey && (
                 <CardFooter>
                   <Button size="lg" className="w-full" disabled={isPurchaseDisabled} onClick={handleBuy}>
-                    {isBuying ? "Processing..." : "Buy Now"}
+                    {isCountdownActive ? "Presale Starting Soon..." : isBuying ? "Processing..." : "Buy Now"}
                   </Button>
                 </CardFooter>
              )}

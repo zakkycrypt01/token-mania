@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
+import Countdown, { useCountdownActive } from "@/components/countdown";
 
 export default function HeroSection() {
+  const isCountdownActive = useCountdownActive();
+
   return (
     <section className="relative w-full h-[90vh] min-h-[700px] flex items-center justify-center text-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -33,11 +38,25 @@ export default function HeroSection() {
             Join the most innovative presale event in crypto history. Contribute to the AI revolution, climb the leaderboard, and secure your stake in the future of intelligence.
           </p>
           <div className="mt-10 flex justify-center gap-4">
-            <Button size="lg" asChild className="glow-shadow">
-              <Link href="#presale">
-                Join Presale Now
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+            <Button 
+              size="lg" 
+              asChild={!isCountdownActive}
+              disabled={isCountdownActive}
+              className="glow-shadow"
+            >
+              {isCountdownActive ? (
+                <div className="flex flex-col items-center">
+                  <span className="flex items-center ">
+                    Presale starts in
+                  </span>
+                  <Countdown />
+                </div>
+              ) : (
+                <Link href="#presale" className="flex items-center">
+                  Join Presale Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link href="#about">
